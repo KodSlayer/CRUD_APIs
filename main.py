@@ -143,7 +143,7 @@ async def get_separate_data(db: Session = Depends(get_db)):
 
 
 # This is to get the flat data (but the questions are repeating in this code)
-@app.get("/flat-data", status_code=status.HTTP_200_OK)
+@app.get("/flat-data1", status_code=status.HTTP_200_OK)
 def get_flat_data1(db: Session = Depends(get_db)):
     results = (
         db.query(models.Questions, models.Choices)
@@ -166,7 +166,7 @@ def get_flat_data1(db: Session = Depends(get_db)):
 
 
 #This is the flat corrected API which gives data properly with the questions
-@app.get("/flat-data", status_code=status.HTTP_200_OK)
+@app.get("/flat-data2", status_code=status.HTTP_200_OK)
 def get_flat_data2(db: Session = Depends(get_db)):
     results = (
         db.query(models.Questions, models.Choices)
