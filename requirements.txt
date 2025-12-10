@@ -1,3 +1,5 @@
-Arbitrage Detection
-BOL agent
-Invoice AR AP Extraction
+fastapi
+uvicorn
+sqlalchemy
+psycopg2-binary
+pydantic
