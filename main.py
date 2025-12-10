@@ -141,8 +141,10 @@ async def get_separate_data(db: Session = Depends(get_db)):
         "Choices": choices
     }
 
+
+# This is to get the flat data (but the questions are repeating in this code)
 @app.get("/flat-data", status_code=status.HTTP_200_OK)
-def get_flat_data(db: Session = Depends(get_db)):
+def get_flat_data1(db: Session = Depends(get_db)):
     results = (
         db.query(models.Questions, models.Choices)
         .join(models.Questions, models.Questions.id == models.Choices.question_id)
@@ -161,3 +163,33 @@ def get_flat_data(db: Session = Depends(get_db)):
         })
 
     return response
+
+
+#This is the flat corrected API which gives data properly with the questions
+@app.get("/flat-data", status_code=status.HTTP_200_OK)
+def get_flat_data2(db: Session = Depends(get_db)):
+    results = (
+        db.query(models.Questions, models.Choices)
+        .join(models.Choices, models.Questions.id == models.Choices.question_id)
+        .all()
+    )
+
+    grouped = {}
+
+    for question, choice in results:
+
+        if question.id not in grouped:
+            grouped[question.id] = {
+                "question_id": question.id,
+                "question_text": question.question_text
+            }
+
+        # Count choices
+        index = sum(1 for k in grouped[question.id] if k.startswith("choice_") and k.endswith("_id")) + 1
+
+        grouped[question.id][f"choice_{index}_id"] = choice.id
+        grouped[question.id][f"choice_{index}_text"] = choice.choice_text
+        grouped[question.id][f"choice_{index}_is_correct"] = choice.is_correct
+
+    return list(grouped.values()) #JSON array that gets return to the client
+ 
