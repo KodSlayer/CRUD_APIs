@@ -141,3 +141,23 @@ async def get_separate_data(db: Session = Depends(get_db)):
         "Choices": choices
     }
 
+@app.get("/flat-data", status_code=status.HTTP_200_OK)
+def get_flat_data(db: Session = Depends(get_db)):
+    results = (
+        db.query(models.Questions, models.Choices)
+        .join(models.Questions, models.Questions.id == models.Choices.question_id)
+        .all()
+    )
+
+    response = []
+
+    for questions, choices in results:
+        response.append({
+            "question_id": questions.id,
+            "question_text": questions.question_text,
+            "choice_id": choices.id,
+            "choice":choices.choice_text,
+            "is_correct": choices.is_correct
+        })
+
+    return response
